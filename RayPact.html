@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RayPact— Web Development & Digital Experiences</title>
+  <meta name="description" content="Web development company building fast, scalable websites and apps. Jamstack, React, APIs, UI/UX, SEO, and cloud." />
+
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
+  <style>
+    /* =====================
+       Design Tokens
+       ===================== */
+    :root {
+      --bg: #0b0f14;
+      --surface: #111722;
+      --muted: #8291a3;
+      --text: #e6edf5;
+      --primary: #4f9cff;
+      --primary-2: #7c5cff;
+      --accent: #22d3ee;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --ring: color-mix(in oklab, var(--primary), white 30%);
+      --container: 1180px;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --muted: #475569;
+        --text: #0b1220;
+        --primary: #2563eb;
+        --primary-2: #7c3aed;
+        --accent: #06b6d4;
+        --ring: color-mix(in oklab, var(--primary), white 60%);
+        --shadow: 0 10px 24px rgba(2, 6, 23, .08);
+      }
+    }
+
+    /* =====================
+       Base
+       ===================== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 80% -10%, color-mix(in oklab, var(--primary), transparent 80%), transparent 60%),
+                  radial-gradient(900px 500px at -10% 10%, color-mix(in oklab, var(--primary-2), transparent 80%), transparent 60%),
+                  var(--bg);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated background orbs */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(79, 156, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(124, 92, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(34, 211, 238, 0.05) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+      33% { transform: translate(-50%, -50%) rotate(120deg); }
+      66% { transform: translate(-50%, -50%) rotate(240deg); }
+    }
+
+    a { color: var(--primary); text-decoration: none; transition: all 0.3s ease; }
+    a:hover { text-decoration: underline; }
+
+    .container { width: min(100% - 2rem, var(--container)); margin-inline: auto; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white; border: 0; border-radius: 999px; padding: .9rem 1.25rem; font-weight: 600;
+      box-shadow: var(--shadow); text-decoration: none; letter-spacing: .2px;
+      position: relative; overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .btn:hover { 
+      filter: saturate(1.1) brightness(1.02); 
+      transform: translateY(-2px); 
+      box-shadow: 0 15px 35px rgba(0,0,0,.4);
+    }
+    .btn:hover::before { left: 100%; }
+    .btn.ghost { 
+      background: transparent; 
+      border: 1px solid color-mix(in oklab, var(--primary), white 25%); 
+      color: var(--text); 
+      box-shadow: none; 
+      backdrop-filter: blur(10px);
+    }
+    .btn.ghost:hover {
+      background: color-mix(in oklab, var(--primary), transparent 90%);
+      border-color: var(--primary);
+    }
+
+    /* =====================
+       Animations
+       ===================== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Intersection Observer Classes */
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =====================
+       Header
+       ===================== */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: saturate(120%) blur(10px);
+      background: color-mix(in oklab, var(--bg), transparent 10%);
+      border-bottom: 1px solid color-mix(in oklab, var(--surface), white 10%);
+      animation: slideInLeft 1s ease-out;
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: .8rem 0; }
+    .brand { 
+      display:flex; align-items:center; gap:.7rem; font-weight:800; letter-spacing:.3px;
+      animation: slideInLeft 1s ease-out 0.2s both;
+    }
+    .logo {
+      inline-size: 40px; block-size: 40px; border-radius: 10px;
+      background: conic-gradient(from 220deg at 50% 50%, var(--primary), var(--primary-2), var(--accent), var(--primary));
+      box-shadow: inset 0 0 12px rgba(255,255,255,.15), 0 6px 18px rgba(0,0,0,.25);
+      animation: rotate 10s linear infinite;
+      transition: all 0.3s ease;
+    }
+    .logo:hover { animation-duration: 2s; }
+    
+    nav ul { 
+      list-style: none; margin: 0; padding: 0; display: flex; gap: 1.2rem; align-items:center;
+      animation: slideInRight 1s ease-out 0.4s both;
+    }
+    nav a { 
+      color: var(--text); text-decoration: none; font-weight: 600; opacity: .9; 
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+    nav a:hover { opacity: 1; }
+    nav a:hover::after { width: 100%; }
+
+    /* Mobile nav (CSS-only) */
+    #menu-toggle { display: none; }
+    .menu-btn { 
+      display:none; border:1px solid color-mix(in oklab, var(--surface), white 20%); 
+      border-radius:12px; padding:.5rem .7rem; transition: all 0.3s ease;
+    }
+    .menu-btn:hover { background: color-mix(in oklab, var(--surface), white 10%); }
+    .menu-btn span { 
+      display:block; width:24px; height:2px; background:var(--text); margin:.35rem 0;
+      transition: all 0.3s ease;
+    }
+    #menu-toggle:checked + .menu-btn span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    #menu-toggle:checked + .menu-btn span:nth-child(2) { opacity: 0; }
+    #menu-toggle:checked + .menu-btn span:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
+
+    @media (max-width: 900px) {
+      .menu-btn { display:block; }
+      nav ul { 
+        position: fixed; inset: 64px 1rem auto 1rem; background: var(--surface); 
+        border:1px solid color-mix(in oklab, var(--surface), white 10%); border-radius:16px; 
+        padding: .8rem; flex-direction: column; gap: .3rem; box-shadow: var(--shadow); 
+        display:none; backdrop-filter: blur(10px);
+      }
+      #menu-toggle:checked + label + ul { 
+        display:flex; 
+        animation: scaleIn 0.3s ease-out;
+      }
+    }
+
+    /* =====================
+       Hero
+       ===================== */
+    .hero { padding: 6rem 0 4rem; }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: center; }
+    .eyebrow { 
+      font-size: .9rem; letter-spacing: .18em; text-transform: uppercase; 
+      color: var(--muted); font-weight: 700;
+      animation: fadeInUp 1s ease-out 0.6s both;
+    }
+    h1 { 
+      font-size: clamp(2rem, 3.6vw + .8rem, 3.5rem); line-height: 1.12; margin: .6rem 0 1rem;
+      animation: fadeInUp 1s ease-out 0.8s both;
+    }
+    .lead { 
+      font-size: clamp(1rem, 1.1vw + .8rem, 1.2rem); 
+      color: color-mix(in oklab, var(--text), var(--muted) 35%); max-width: 60ch;
+      animation: fadeInUp 1s ease-out 1s both;
+    }
+    .cta-wrap { 
+      margin-top: 1.5rem; display: flex; gap: .8rem; flex-wrap: wrap;
+      animation: fadeInUp 1s ease-out 1.2s both;
+    }
+
+    .hero-card { 
+      background: linear-gradient(180deg, color-mix(in oklab, var(--surface), white 6%), color-mix(in oklab, var(--surface), black 6%)); 
+      border: 1px solid color-mix(in oklab, var(--surface), white 10%); border-radius: var(--radius); 
+      padding: 1.2rem; display:grid; grid-template-columns: 56px 1fr; gap: 1rem; align-items:center; 
+      box-shadow: var(--shadow);
+      animation: slideInRight 1s ease-out 1.4s both;
+      transition: all 0.3s ease;
+    }
+    .hero-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,.4);
+    }
+    .hero-icon { 
+      inline-size: 56px; block-size: 56px; border-radius: 14px; display:grid; place-items:center; 
+      background: linear-gradient(135deg, color-mix(in oklab, var(--primary), white 15%), color-mix(in oklab, var(--primary-2), white 15%));
+      transition: all 0.3s ease;
+    }
+    .hero-card:hover .hero-icon { animation: pulse 2s infinite; }
+
+    @media (max-width: 900px) {
+      .hero { padding: 4.5rem 0 2.5rem; }
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+
+    /* =====================
+       Trust / Stats
+       ===================== */
+    .stats { 
+      margin: 1.5rem 0 0; display:grid; grid-template-columns: repeat(4, 1fr); gap: .9rem;
+      animation: fadeInUp 1s ease-out 1.6s both;
+    }
+    .stat { 
+      background: var(--surface); border: 1px solid color-mix(in oklab, var(--surface), white 10%); 
+      border-radius: 14px; padding: .9rem 1rem; text-align:center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .stat:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+    .stat strong { font-size: 1.4rem; display:block; transition: color 0.3s ease; }
+    .stat span { color: var(--muted); font-size:.9rem; }
+    .stat:hover strong { color: var(--primary); }
+    @media (max-width: 700px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+    /* =====================
+       Sections
+       ===================== */
+    section { padding: 4rem 0; }
+    .section-head { 
+      display:flex; align-items:end; justify-content: space-between; gap: 1rem; margin-bottom: 1.4rem;
+    }
+    .section-head h2 { font-size: clamp(1.6rem, 1.9vw + 1rem, 2.2rem); margin: 0; }
+    .section-head p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+    /* Services */
+    .cards { display:grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .card { 
+      background: var(--surface); border: 1px solid color-mix(in oklab, var(--surface), white 12%); 
+      border-radius: var(--radius); padding: 1.1rem; box-shadow: var(--shadow); display:grid; gap:.6rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(79, 156, 255, 0.05), transparent);
+      transition: left 0.6s ease;
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(0,0,0,.4);
+      border-color: var(--primary);
+    }
+    .card:hover::before { left: 100%; }
+    .card .icon { 
+      width: 44px; height: 44px; border-radius: 12px; display:grid; place-items:center; 
+      background: color-mix(in oklab, var(--primary), white 20%);
+      transition: all 0.3s ease;
+    }
+    .card:hover .icon { 
+      background: var(--primary);
+      animation: pulse 2s infinite;
+    }
+    .card h3 { margin: .3rem 0; transition: color 0.3s ease; }
+    .card:hover h3 { color: var(--primary); }
+    .card p { color: var(--muted); margin: 0 0 .6rem; }
+    .card ul { margin: 0; padding-left: 1rem; color: color-mix(in oklab, var(--text), var(--muted) 30%); }
+    @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+
+    /* Portfolio */
+    .portfolio { display:grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .work { 
+      position: relative; overflow:hidden; border-radius: 18px; background: #0f172a; 
+      border: 1px solid color-mix(in oklab, var(--surface), white 12%);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    .work:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 30px 60px rgba(0,0,0,.5);
+    }
+    .work img { 
+      width: 100%; height: 220px; object-fit: cover; display:block; 
+      filter: saturate(1.05) contrast(1.02);
+      transition: all 0.4s ease;
+    }
+    .work:hover img {
+      filter: saturate(1.2) contrast(1.1) brightness(1.1);
+      transform: scale(1.1);
+    }
+    .work .meta { 
+      position: absolute; inset: auto 0 0 0; 
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,.7)); 
+      padding: .9rem; display:flex; align-items:center; justify-content: space-between; gap: .5rem;
+      transform: translateY(10px);
+      transition: transform 0.3s ease;
+    }
+    .work:hover .meta { transform: translateY(0); }
+    .whitetext{color:#ffffff;font-size:18px;}
+    .chip { 
+      font-size: .75rem; padding:.25rem .5rem; 
+      border:1px solid color-mix(in oklab, var(--surface), white 25%); 
+      border-radius:999px; color:#ffffff;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    .work:hover .chip {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    @media (max-width: 900px) { .portfolio { grid-template-columns: 1fr; } }
+
+    /* Process */
+    .process { display:grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; counter-reset: step; }
+    .step { 
+      background: var(--surface); border: 1px solid color-mix(in oklab, var(--surface), white 12%); 
+      border-radius: var(--radius); padding: 1rem; position:relative;
+      transition: all 0.3s ease;
+    }
+    .step:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+    .step::before { 
+      counter-increment: step; content: counter(step); position:absolute; inset: -12px auto auto -12px; 
+      width: 38px; height: 38px; border-radius: 10px; display:grid; place-items:center; 
+      background: linear-gradient(135deg, var(--primary), var(--primary-2)); color:#fff; font-weight:800; 
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+    .step:hover::before {
+      transform: scale(1.1) rotate(360deg);
+    }
+    .step h3 { transition: color 0.3s ease; }
+    .step:hover h3 { color: var(--primary); }
+    .step p { margin: .4rem 0 0; color: var(--muted); }
+    @media (max-width: 900px) { .process { grid-template-columns: 1fr; } }
+
+    /* Testimonials */
+    .testimonials { display:grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .quote { 
+      background: var(--surface); border: 1px solid color-mix(in oklab, var(--surface), white 12%); 
+      border-radius: var(--radius); padding: 1rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .quote::before {
+      content: '"';
+      position: absolute;
+      top: -10px; left: 15px;
+      font-size: 3rem;
+      color: var(--primary);
+      opacity: 0.3;
+      font-family: Georgia, serif;
+    }
+    .quote:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+    .quote p { margin: 0 0 .6rem; }
+    .who { 
+      display:flex; align-items:center; gap:.7rem; color: var(--muted);
+      transition: all 0.3s ease;
+    }
+    .quote:hover .who { color: var(--text); }
+    .who img { 
+      width: 36px; height: 36px; border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    .quote:hover .who img { transform: scale(1.1); }
+    @media (max-width: 900px) { .testimonials { grid-template-columns: 1fr; } }
+
+    /* Contact */
+    .contact { display:grid; grid-template-columns: 1.1fr 1fr; gap: 1.2rem; }
+    form { 
+      background: var(--surface); border: 1px solid color-mix(in oklab, var(--surface), white 12%); 
+      border-radius: var(--radius); padding: 1rem;
+      transition: all 0.3s ease;
+    }
+    form:hover { box-shadow: var(--shadow); }
+    .field { display:grid; gap:.4rem; margin-bottom:.9rem; }
+    .field input, .field textarea, .field select { 
+      width:100%; padding:.8rem .9rem; border-radius: 12px; 
+      border:1px solid color-mix(in oklab, var(--surface), white 18%); 
+      background: color-mix(in oklab, var(--surface), white 4%); color: var(--text);
+      transition: all 0.3s ease;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { 
+      outline: 2px solid var(--ring); border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,.1);
+    }
+    .note { color: var(--muted); font-size: .92rem; }
+    .panel { 
+      background: linear-gradient(180deg, color-mix(in oklab, var(--surface), white 6%), color-mix(in oklab, var(--surface), black 6%)); 
+      border: 1px solid color-mix(in oklab, var(--surface), white 12%); border-radius: var(--radius); 
+      padding: 1.1rem; box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+    .panel:hover { transform: translateY(-3px); }
+
+    /* Footer */
+    footer { margin-top: 3rem; border-top: 1px solid color-mix(in oklab, var(--surface), white 12%); }
+    .foot { display:grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 1rem; padding: 1.6rem 0; }
+    .foot h4 { margin: .2rem 0 .6rem; }
+    .foot ul { margin: 0; padding: 0; list-style: none; display:grid; gap:.35rem; }
+    .foot a { transition: all 0.3s ease; }
+    .foot a:hover { color: var(--primary); transform: translateX(5px); }
+    .legal { color: var(--muted); font-size: .9rem; padding: .9rem 0 2rem; }
+    @media (max-width: 900px) { .foot { grid-template-columns: 1fr; } }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { 
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      body::before { animation: none; }
+      .logo { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main Navigation">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <span>RayPact</span>
+      </div>
+      <input type="checkbox" id="menu-toggle" aria-label="Toggle menu" />
+      <label for="menu-toggle" class="menu-btn" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </label>
+      <nav>
+        <ul>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a class="btn" href="#contact">Get a Quote</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Web Development • App Development • UI/UX • SEO • Digital Marketing</div>
+        <h1>We build fast, delightful PRODUCTS that delivers .</h1>
+        <p class="lead">From landing pages to full‑stack apps, we design and develop digital experiences that load in milliseconds, scale to millions, and feel great to use.</p>
+        <div class="cta-wrap">
+          <a href="#contact" class="btn">Start your project</a>
+          <a href="#work" class="btn ghost">See our work</a>
+        </div>
+        <div class="stats" aria-label="Company stats">
+          <div class="stat"><strong>200+</strong><span>Projects shipped</span></div>
+          <div class="stat"><strong>98%</strong><span>Client satisfaction</span></div>
+          <div class="stat"><strong>0.7s</strong><span>Median LCP</span></div>
+          <div class="stat"><strong>12+</strong><span>Industry verticals</span></div>
+        </div>
+      </div>
+      <div class="hero-card" role="figure" aria-label="Core capabilities">
+        <div class="hero-icon" aria-hidden="true">
+          <!-- Inline SVG icon -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M5 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6"/>
+            <path d="M8 8h8M8 12h5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h3 style="margin:.1rem 0 .2rem">Performance‑first engineering</h3>
+          <p class="note">Accessibility, Core Web Vitals, and robust CI/CD included. We obsess over the details so your users don't have to.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services">
+    <div class="container">
+      <div class="section-head animate-on-scroll">
+        <h2>Services</h2>
+        <p>End‑to‑end product development: discovery, design, engineering, and growth. Pick a lane or let us drive the whole road‑map.</p>
+      </div>
+      <div class="cards" role="list">
+        <article class="card animate-on-scroll" role="listitem">
+          <div class="icon" aria-hidden="true">💡</div>
+          <h3>Product Strategy</h3>
+          <p>Lean discovery to align business goals with user needs.</p>
+          <ul>
+            <li>Workshops & road‑mapping</li>
+            <li>User research & UX audits</li>
+            <li>Analytics & KPI setup</li>
+          </ul>
+        </article>
+        <article class="card animate-on-scroll" role="listitem">
+          <div class="icon" aria-hidden="true">🎨</div>
+          <h3>UI/UX Design</h3>
+          <p>Beautiful, accessible interfaces that convert.</p>
+          <ul>
+            <li>Design systems</li>
+            <li>Interactive prototypes</li>
+            <li>Brand & art direction</li>
+          </ul>
+        </article>
+        <article class="card animate-on-scroll" role="listitem">
+          <div class="icon" aria-hidden="true">⚙️</div>
+          <h3>Full‑Stack Development</h3>
+          <p>Modern stacks for speed and scale.</p>
+          <ul>
+            <li>Jamstack, React, Next.js</li>
+            <li>Node, Python, APIs</li>
+            <li>Cloud, CI/CD, testing</li>
+          </ul>
+        </article>
+        <article class="card animate-on-scroll" role="listitem">
+          <div class="icon" aria-hidden="true">🚀</div>
+          <h3>Growth & SEO</h3>
+          <p>Organic traffic and conversion optimization.</p>
+          <ul>
+            <li>Technical SEO</li>
+            <li>Content strategy</li>
+            <li>A/B testing</li>
+          </ul>
+        </article>
+        <article class="card animate-on-scroll" role="listitem">
+          <div class="icon" aria-hidden="true">🛡️</div>
+          <h3>Maintenance & Support</h3>
+          <p>Monitoring, updates, and performance tuning.</p>
+          <ul>
+            <li>Security hardening</li>
+            <li>Uptime monitoring</li>
+            <li>Performance budgets</li>
+          </ul>
+        </article>
+        <article class="card animate-on-scroll" role="listitem">
+          <div class="icon" aria-hidden="true">🧩</div>
+          <h3>Integrations</h3>
+          <p>Payments, CMS, analytics, CRM & more.</p>
+          <ul>
+            <li>Stripe, Shopify</li>
+            <li>Headless CMS</li>
+            <li>HubSpot, GA4</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio -->
+  <section id="work">
+    <div class="container">
+      <div class="section-head animate-on-scroll">
+        <h2>Selected Work</h2>
+        <p>Recent launches and prototypes. Real results, shipped fast.</p>
+      </div>
+      <div class="portfolio" role="list">
+        <figure class="work animate-on-scroll" role="listitem">
+          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1600&auto=format&fit=crop" alt="Dashboard UI with charts" />
+          <figcaption class="meta">
+            <p class="whitetext">Fintech Analytics</p>
+            <span class="chip">Next.js • D3</span>
+          </figcaption>
+        </figure>
+        <figure class="work animate-on-scroll" role="listitem">
+          <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1600&auto=format&fit=crop" alt="Team collaboration platform" />
+          <figcaption class="meta">
+            <p class="whitetext">Collab Suite</p>
+            <span class="chip">React • Node</span>
+          </figcaption>
+        </figure>
+        <figure class="work animate-on-scroll" role="listitem">
+          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1600&auto=format&fit=crop" alt="Code editor on screen" />
+          <figcaption class="meta">
+           <p class="whitetext">DevTools Cloud</p>
+            <span class="chip">SaaS • APIs</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section id="process">
+    <div class="container">
+      <div class="section-head animate-on-scroll">
+        <h2>Our Process</h2>
+        <p>Transparent, iterative, and data‑driven from day one.</p>
+      </div>
+      <div class="process">
+        <div class="step animate-on-scroll">
+          <h3>Discover</h3>
+          <p>Workshops, user interviews, success metrics.</p>
+        </div>
+        <div class="step animate-on-scroll">
+          <h3>Design</h3>
+          <p>Wireframes, prototypes, and design systems.</p>
+        </div>
+        <div class="step animate-on-scroll">
+          <h3>Build</h3>
+          <p>Agile sprints, reviews, automated testing.</p>
+        </div>
+        <div class="step animate-on-scroll">
+          <h3>Launch & Grow</h3>
+          <p>Observability, SEO, optimization, support.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section>
+    <div class="container">
+      <div class="section-head animate-on-scroll">
+        <h2>What clients say</h2>
+        <p>We partner for the long term. Here's what that feels like.</p>
+      </div>
+      <div class="testimonials" role="list">
+        <article class="quote animate-on-scroll" role="listitem">
+          <p>"RayPact shipped in 6 weeks what others scoped for 4 months — and performance went through the roof."</p>
+          <div class="who"><img src="https://i.pravatar.cc/72?img=15" alt="Portrait of Alex" />Alex P. • VP Engineering</div>
+        </article>
+        <article class="quote animate-on-scroll" role="listitem">
+          <p>"Our conversions doubled after the redesign. Their UX team is world‑class."</p>
+          <div class="who"><img src="https://i.pravatar.cc/72?img=11" alt="Portrait of Meera" />Meera S. • Head of Growth</div>
+        </article>
+        <article class="quote animate-on-scroll" role="listitem">
+          <p>"The clean codebase and CI/CD saved us countless hours. True partners, not just vendors."</p>
+          <div class="who"><img src="https://i.pravatar.cc/72?img=34" alt="Portrait of Diego" />Diego R. • CTO</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="container contact">
+      <form action="mailto:manoj@unihiring.com" method="post" enctype="text/plain" aria-label="Contact form" class="animate-on-scroll">
+        <h2>Tell us about your project</h2>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" required />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@company.com" required />
+        </div>
+        <div class="field">
+          <label for="budget">Estimated budget</label>
+          <select id="budget" name="budget" required>
+            <option value="" disabled selected>Select a range</option>
+            <option>Under 10,000</option>
+            <option>10,000 – 20,000</option>
+            <option>20,000 – 50,000</option>
+            <option>50,000+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">Project details</label>
+          <textarea id="message" name="message" rows="5" placeholder="Goals, timeline, must‑haves…" required></textarea>
+        </div>
+        <button class="btn" type="submit">Request Proposal</button>
+        <p class="note">Prefer to Discuss? Feel free to reach us <a href="">+91 9698 333 500 | info@raypact.com</a></p>
+      </form>
+      <aside class="panel animate-on-scroll">
+        <h3>Why choose us</h3>
+        <ul>
+          <li>Core Web Vitals AA+ targets</li>
+          <li>Accessibility (WCAG 2.2) baked in</li>
+          <li>Transparent sprints & weekly demos</li>
+          <li>Documentation and hand‑off included</li>
+        </ul>
+        <h3 style="margin-top:1rem">Contact</h3>
+        <p class="note">
+          Raypact<br />
+          Bangalore<br />
+Chennai<br />
+Coimbatore<br />
+          +91 9698333500
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container foot">
+      <div>
+        <div class="brand" style="margin-bottom:.5rem">
+          <div class="logo" aria-hidden="true"></div>
+          <span>RayPact</span>
+        </div>
+        <p class="note">We craft blazing‑fast websites and apps with modern stacks and relentless attention to detail.</p>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Strategy</a></li>
+          <li><a href="#services">Design</a></li>
+          <li><a href="#services">Development</a></li>
+          <li><a href="#services">SEO</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#work">Case studies</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Newsletter</h4>
+        <p class="note">Monthly insights on performance, UX, and SEO.</p>
+        <form class="" onsubmit="event.preventDefault(); alert('Thanks for subscribing!');">
+          <div class="field" style="margin: .6rem 0 0">
+            <label class="visually-hidden" for="nl">Email</label>
+            <input id="nl" type="email" placeholder="you@company.com" required />
+          </div>
+          <button class="btn" style="margin-top:.4rem">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="container legal">© <span id="year"></span> Raypact. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all elements with animate-on-scroll class
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Add staggered delay to cards and other grouped elements
+    document.querySelectorAll('.cards .card').forEach((card, index) => {
+      card.style.transitionDelay = `${index * 0.1}s`;
+    });
+
+    document.querySelectorAll('.portfolio .work').forEach((work, index) => {
+      work.style.transitionDelay = `${index * 0.15}s`;
+    });
+
+    document.querySelectorAll('.process .step').forEach((step, index) => {
+      step.style.transitionDelay = `${index * 0.1}s`;
+    });
+
+    document.querySelectorAll('.testimonials .quote').forEach((quote, index) => {
+      quote.style.transitionDelay = `${index * 0.1}s`;
+    });
+  </script>
+</body>
+<script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpsh-oh'},{'server':'p3plzcpnl508983'},{'dcenter':'p3'},{'cp_id':'10284602'},{'cp_cl':'8'}) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script><script src='https://img1.wsimg.com/traffic-assets/js/tccl.min.js'></script></html>
